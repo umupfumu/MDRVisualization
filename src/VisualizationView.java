@@ -38,6 +38,8 @@ public class VisualizationView implements Observer {
 	private Image wellImage;
 	private Image sickImage;
 	private Image latentImage;
+	private Image latentMDRImage;
+	private Image activeMDRImage;
 	private HashMap<Person,ImageView> imageViewMap = new HashMap<Person,ImageView>();
 	
 	private static int CANVAS_WIDTH =1000;
@@ -54,15 +56,21 @@ public class VisualizationView implements Observer {
 	private static String WELL_IMAGE_FILE = "wellPerson.png";
 	private static String SICK_IMAGE_FILE = "sickPerson.png";
 	private static String LATENT_IMAGE_FILE = "latentPerson.png";
+	private static String MDR_ACTIVE_FILE = "MDRactive.png";
+	private static String MDR_LATENT_FILE = "MDRlatent.png";
 	
 	public VisualizationView(Stage stage,VisualizationModel model) {
 		this.primaryStage=stage;
 		File wellImageFile = new File(WELL_IMAGE_FILE);
 		File sickImageFile = new File(SICK_IMAGE_FILE);
 		File latentImageFile = new File(LATENT_IMAGE_FILE);
+		File activeMDRFile = new File(MDR_ACTIVE_FILE);
+		File latentMDRFile = new File(MDR_LATENT_FILE);
 		wellImage = new Image(wellImageFile.toURI().toString());
 		sickImage = new Image(sickImageFile.toURI().toString());
 		latentImage = new Image(latentImageFile.toURI().toString());
+		latentMDRImage = new Image(latentMDRFile.toURI().toString());
+		activeMDRImage = new Image(activeMDRFile.toURI().toString());
 		dayLabel = new Label();
 	}
 	
@@ -138,12 +146,22 @@ public class VisualizationView implements Observer {
 
 	private void updateImageForDiseaseState(ImageView imageView, Person person) {
 		DiseaseState diseaseState = person.getDiseaseState();
+		ResistanceProfile resistanceProfile = person.getResistanceProfile();
 		boolean infected = person.getInfected();
 		if(infected) {
-			if(diseaseState==diseaseState.LATENT)
-				imageView.setImage(latentImage);
-			else
-				imageView.setImage(sickImage);
+			if(diseaseState==DiseaseState.LATENT) {
+				if(resistanceProfile==ResistanceProfile.MDR) {
+					imageView.setImage(latentMDRImage);
+				} else {
+					imageView.setImage(latentImage);
+				}
+			} else {
+				if(resistanceProfile==ResistanceProfile.MDR){
+					imageView.setImage(activeMDRImage);
+				} else {
+					imageView.setImage(sickImage);					
+				}
+			}
 		} else {
 			imageView.setImage(wellImage);
 		}

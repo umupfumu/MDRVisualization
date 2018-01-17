@@ -28,6 +28,9 @@ public class VisualizationModel extends Observable {
 	private static int NUM_STARTING_INFECTED = 2;
 	private static int LIKELIHOOD_TO_INFECT_PERCENT = 100; //percent per day. 1 is 1% not 100%
 	private static int DEVELOP_ACTIVE_PERCENT=50;
+	private static int IN_TREATMENT_LIKELIHOOD=20;
+	private static int DEVELOP_MDR_PERCENT=1;
+	private static int N_DAYS_TO_CURE=180;
 	
 	private int buildingRows;
 	private int buildingCols;
@@ -155,16 +158,53 @@ public class VisualizationModel extends Observable {
 	}
 
 	public void advanceDay() {		
-
 		clearWorkplaces();
-		
+		assignWorkplaces();
+		enrollInTreatment();
+		incrementTreatmentDay();
+		convertToMDR();
+		spreadInfections();
+		day++;
+		setChanged();
+		notifyObservers(WhatHappened.DAY_ADVANCED);
+	}
+
+	private void convertToMDR() {
 		for(int i=0;i<people.size();i++) {
 			Person person = people.get(i);
-			if(ThreadLocalRandom.current().nextInt(0,100)<WORK_LIKELIHOOD_PERCENT) {
-				assignWorkplace(person);
-			}	
+			if(person.getInfected()
+					&& person.isInTreatment()
+					&& person.getResistanceProfile()!=ResistanceProfile.MDR) {
+				if(ThreadLocalRandom.current().nextInt(0,100)<DEVELOP_MDR_PERCENT)
+					person.setResistanceProfile(ResistanceProfile.MDR);
+			}
 		}
-		
+	}
+
+	private void incrementTreatmentDay() {
+		for(int i=0;i<people.size();i++) {
+			Person person = people.get(i);
+			if(person.getInfected()&&person.isInTreatment()) {
+				person.setnDaysInTreatment(person.getnDaysInTreatment()+1);
+				if(person.getnDaysInTreatment()==N_DAYS_TO_CURE)
+					person.setInfected(false);
+			}
+		}
+	}
+
+	private void enrollInTreatment() {
+		for(int i=0;i<people.size();i++) {
+			Person person = people.get(i);
+			if(person.getInfected() && person.getDiseaseState() == DiseaseState.ACTIVE 
+					&& person.getResistanceProfile()!=ResistanceProfile.MDR
+					&&!person.isInTreatment()) {
+				if(ThreadLocalRandom.current().nextInt(0,100)<IN_TREATMENT_LIKELIHOOD)
+					person.setInTreatment(true);
+			}
+		}
+	}
+
+	private void spreadInfections() {
 		for(int i=0;i<people.size();i++) {
 			Person person = people.get(i);
 			if(person.getInfected()){
@@ -175,11 +215,15 @@ public class VisualizationModel extends Observable {
 					spreadInfection(person);
 			}
 		}
-		
-		day++;
+	}
 
-		setChanged();
-		notifyObservers(WhatHappened.DAY_ADVANCED);
+	private void assignWorkplaces() {
+		for(int i=0;i<people.size();i++) {
+			Person person = people.get(i);
+			if(ThreadLocalRandom.current().nextInt(0,100)<WORK_LIKELIHOOD_PERCENT) {
+				assignWorkplace(person);
+			}	
+		}
 	}
 
 	private void spreadInfection(Person person) {

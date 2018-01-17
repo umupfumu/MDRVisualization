@@ -5,6 +5,25 @@ public class Person {
 	private Position workPos;
 	private DiseaseState diseaseState;
 	private ResistanceProfile resistanceProfile;
+	private boolean inTreatment;
+	private int nDaysInTreatment=0;
+	
+	public int getnDaysInTreatment() {
+		return nDaysInTreatment;
+	}
+
+	public void setnDaysInTreatment(int nDaysInTreatment) {
+		this.nDaysInTreatment = nDaysInTreatment;
+	}
+
+	public boolean isInTreatment() {
+		return inTreatment;
+	}
+
+	public void setInTreatment(boolean inTreatment) {
+		this.inTreatment = inTreatment;
+	}
+
 	public ResistanceProfile getResistanceProfile() {
 		return resistanceProfile;
 	}
