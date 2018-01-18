@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.imageio.ImageIO;
+
 import javafx.animation.SequentialTransition;
 import javafx.animation.TranslateTransition;
 import javafx.beans.property.IntegerProperty;
@@ -75,16 +77,11 @@ public class VisualizationView implements Observer {
 	
 	public VisualizationView(Stage stage,VisualizationModel model) {
 		this.primaryStage=stage;
-		File wellImageFile = new File(WELL_IMAGE_FILE);
-		File sickImageFile = new File(SICK_IMAGE_FILE);
-		File latentImageFile = new File(LATENT_IMAGE_FILE);
-		File activeMDRFile = new File(MDR_ACTIVE_FILE);
-		File latentMDRFile = new File(MDR_LATENT_FILE);
-		wellImage = new Image(wellImageFile.toURI().toString());
-		sickImage = new Image(sickImageFile.toURI().toString());
-		latentImage = new Image(latentImageFile.toURI().toString());
-		latentMDRImage = new Image(latentMDRFile.toURI().toString());
-		activeMDRImage = new Image(activeMDRFile.toURI().toString());
+		wellImage = new Image(WELL_IMAGE_FILE);
+		sickImage = new Image(SICK_IMAGE_FILE);
+		latentImage = new Image(LATENT_IMAGE_FILE);
+		latentMDRImage = new Image(MDR_LATENT_FILE);
+		activeMDRImage = new Image(MDR_ACTIVE_FILE);
 		dayLabel = new Label();
 		
 		this.model=model;
