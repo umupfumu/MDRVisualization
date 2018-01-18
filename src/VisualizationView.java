@@ -11,18 +11,23 @@ import javafx.animation.SequentialTransition;
 import javafx.animation.TranslateTransition;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToolBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -91,12 +96,85 @@ public class VisualizationView implements Observer {
 		VBox bottomBox = new VBox();
 		HBox buttonPane = new HBox();
 
+		Button seeLegend = new Button();
+		seeLegend.setText("See Legend");
+		seeLegend.setOnAction(new EventHandler() {
+			@Override
+			public void handle(Event arg0) {
+				
+				ImageView well = new ImageView();
+				ImageView activeMDR = new ImageView();
+				ImageView sick = new ImageView();
+				ImageView latent = new ImageView();
+				ImageView latentMDR = new ImageView();
+				
+				well.setImage(wellImage);
+				well.setFitHeight(ROW_HEIGHT);
+				well.setFitWidth(COLUMN_WIDTH);
+				sick.setImage(sickImage);
+				sick.setFitHeight(ROW_HEIGHT);
+				sick.setFitWidth(COLUMN_WIDTH);
+				activeMDR.setImage(activeMDRImage);
+				activeMDR.setFitHeight(ROW_HEIGHT);
+				activeMDR.setFitWidth(COLUMN_WIDTH);
+				latent.setImage(latentImage);
+				latent.setFitHeight(ROW_HEIGHT);
+				latent.setFitWidth(COLUMN_WIDTH);
+				latentMDR.setImage(latentMDRImage);
+				latentMDR.setFitHeight(ROW_HEIGHT);
+				latentMDR.setFitWidth(COLUMN_WIDTH);
+				
+				int buildingWidth = VisualizationModel.N_COLUMNS_PER_BUILDING*COLUMN_WIDTH;
+				int buildingHeight = VisualizationModel.N_ROWS_PER_BUILDING*ROW_HEIGHT;
+
+				Rectangle house = new Rectangle(0,0,buildingWidth,buildingHeight);
+				Rectangle workplace = new Rectangle(0,0,buildingWidth,buildingHeight);
+				
+				house.setStroke(Color.BLACK);
+				house.setFill(Color.WHITE);
+				
+				workplace.setStroke(Color.BLUE);
+				workplace.setArcHeight(10);
+				workplace.setArcWidth(10);
+				workplace.setFill(Color.WHITE);
+				
+				Stage dialogStage = new Stage();
+				GridPane grid = new GridPane();
+				Scene legendScene = new Scene(grid);
+				
+				grid.add(house, 0, 0,1,1);
+				grid.add(workplace, 0,1,1,1);
+				grid.add(well, 0, 2,1,1);
+				grid.add(sick, 0, 3,1,1);
+				grid.add(latent, 0, 4,1,1);
+				grid.add(activeMDR, 0, 5,1,1);
+				grid.add(latentMDR, 0, 6,1,1);
+				
+				grid.add(new Text("House"), 1,0,1,1);
+				grid.add(new Text("Workplace or school"), 1, 1);
+				grid.add(new Text("Well"), 1, 2);
+				grid.add(new Text("Infected"), 1, 3);
+				grid.add(new Text("Latent"), 1, 4);
+				grid.add(new Text("Infected MDR"), 1, 5);
+				grid.add(new Text("Latent MDR"), 1, 6);
+				
+				grid.setVgap(3);
+				grid.setHgap(2);
+				
+				dialogStage.setScene(legendScene);
+				dialogStage.show();
+			}			
+		});
+		
+
+		
 		nextDayButton.setVisible(false);
 		startButton.setOnAction(startButtonController);
 		nextDayButton.setOnAction(nextDayButtonController);
 		
 		buttonPane.getChildren().add(startButton);
 		buttonPane.getChildren().add(nextDayButton);
+		buttonPane.getChildren().add(seeLegend);
 		
 		buttonPane.setAlignment(Pos.BOTTOM_CENTER);
 		
