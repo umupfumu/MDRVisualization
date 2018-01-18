@@ -1,5 +1,6 @@
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.scene.control.Button;
 
 public class NextDayButtonController implements EventHandler {
 
@@ -11,7 +12,11 @@ public class NextDayButtonController implements EventHandler {
 
 	@Override
 	public void handle(Event arg0) {
-		model.advanceDay();
+		
+		int nDays = ((Integer)((Button) arg0.getSource()).getUserData());
+		
+		for(int i=0;i<nDays;i++)
+			model.advanceDay(i==nDays-1);
 	}
 
 }

@@ -44,6 +44,8 @@ public class VisualizationView implements Observer {
 	private Button startButton = new Button("Start");
 
 	private Button nextDayButton = new Button("Next day");
+	private Button advanceThirtyButton = new Button("Advance 30 days");
+	private Button advanceThreeSixtyFiveButton = new Button("Advance 365 days");
 	
 	private Pane mainPane;
 	private Label dayLabel;
@@ -169,11 +171,23 @@ public class VisualizationView implements Observer {
 
 		
 		nextDayButton.setVisible(false);
+		advanceThirtyButton.setVisible(false);
+		advanceThreeSixtyFiveButton.setVisible(false);
+		
+		nextDayButton.setUserData(1);
+		advanceThirtyButton.setUserData(30);
+		advanceThreeSixtyFiveButton.setUserData(365);
+		
+		advanceThirtyButton.setOnAction(nextDayButtonController);
+		advanceThreeSixtyFiveButton.setOnAction(nextDayButtonController);
+		
 		startButton.setOnAction(startButtonController);
 		nextDayButton.setOnAction(nextDayButtonController);
 		
 		buttonPane.getChildren().add(startButton);
 		buttonPane.getChildren().add(nextDayButton);
+		buttonPane.getChildren().add(advanceThirtyButton);
+		buttonPane.getChildren().add(advanceThreeSixtyFiveButton);
 		buttonPane.getChildren().add(seeLegend);
 		
 		buttonPane.setAlignment(Pos.BOTTOM_CENTER);
@@ -213,6 +227,8 @@ public class VisualizationView implements Observer {
 				startButton.setOnAction(null);
 				startButton.setOnAction(resetButtonController);
 				nextDayButton.setVisible(true);
+				advanceThirtyButton.setVisible(true);
+				advanceThreeSixtyFiveButton.setVisible(true);				
 				break;
 			}
 			case DAY_ADVANCED:{
@@ -226,6 +242,8 @@ public class VisualizationView implements Observer {
 				startButton.setOnAction(null);
 				startButton.setOnAction(startButtonController);
 				nextDayButton.setVisible(false);
+				advanceThirtyButton.setVisible(false);
+				advanceThreeSixtyFiveButton.setVisible(false);
 				updateLabels(model);
 				updateDiseaseState(model);
 				removeBuildings();

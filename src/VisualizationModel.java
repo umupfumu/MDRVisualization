@@ -148,7 +148,7 @@ public class VisualizationModel extends Observable {
 		return day;
 	}
 
-	public void advanceDay() {		
+	public void advanceDay(boolean shouldNotify) {		
 		clearWorkplaces();
 		assignWorkplaces();
 		enrollInTreatment();
@@ -157,7 +157,8 @@ public class VisualizationModel extends Observable {
 		spreadInfections();
 		day++;
 		setChanged();
-		notifyObservers(WhatHappened.DAY_ADVANCED);
+		if(shouldNotify)
+			notifyObservers(WhatHappened.DAY_ADVANCED);
 	}
 
 	private void convertToMDR() {
