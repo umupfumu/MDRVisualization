@@ -1,13 +1,10 @@
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
-
-import javax.imageio.ImageIO;
 
 import javafx.animation.SequentialTransition;
 import javafx.animation.TranslateTransition;
@@ -20,12 +17,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToolBar;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -47,6 +46,9 @@ public class VisualizationView implements Observer {
 	private Button advanceThirtyButton = new Button("Advance 30 days");
 	private Button advanceThreeSixtyFiveButton = new Button("Advance 365 days");
 	
+	private VBox titles = new VBox();
+
+	private StackPane titlePane = new StackPane();
 	private Pane mainPane;
 	private Label dayLabel;
 	private BorderPane borderPane;
@@ -56,7 +58,11 @@ public class VisualizationView implements Observer {
 	private Image latentImage;
 	private Image latentMDRImage;
 	private Image activeMDRImage;
+	private Image acidFastImage;
 	private HashMap<Person,ImageView> imageViewMap = new HashMap<Person,ImageView>();
+	
+	private Text titleTextLineOne = new Text("The Evolution of MDR Tuberculosis");
+	private Text titleTextLineTwo = new Text("Visualization of an agent-based model");
 	
 	private static int CANVAS_WIDTH =1000;
 	private static int CANVAS_HEIGHT=700;
@@ -74,6 +80,7 @@ public class VisualizationView implements Observer {
 	private static String LATENT_IMAGE_FILE = "latentPerson.png";
 	private static String MDR_ACTIVE_FILE = "MDRactive.png";
 	private static String MDR_LATENT_FILE = "MDRlatent.png";
+	private static String ACID_FAST_FILE = "acidFast.png";
 	
 	public VisualizationView(Stage stage,VisualizationModel model) {
 		this.primaryStage=stage;
@@ -82,6 +89,7 @@ public class VisualizationView implements Observer {
 		latentImage = new Image(LATENT_IMAGE_FILE);
 		latentMDRImage = new Image(MDR_LATENT_FILE);
 		activeMDRImage = new Image(MDR_ACTIVE_FILE);
+		acidFastImage = new Image(ACID_FAST_FILE);
 		dayLabel = new Label();
 		
 		this.model=model;
@@ -209,8 +217,40 @@ public class VisualizationView implements Observer {
 						"-fx-border-style: solid inside;");
 
 		
+		
+		
 		outerScene = new OuterScene(borderPane);
 		primaryStage.setScene(outerScene);
+		
+
+		
+		titles.setSpacing(20);
+		
+		titles.setLayoutX(400);
+		titles.setLayoutY(320);
+		
+		titleTextLineOne.setScaleX(3);
+		titleTextLineOne.setScaleY(3);
+		
+		titleTextLineTwo.setScaleX(2);
+		titleTextLineTwo.setScaleY(2);
+		
+		titleTextLineOne.setEffect(new DropShadow());
+		titleTextLineTwo.setEffect(new DropShadow());
+		
+		titles.getChildren().addAll(titleTextLineOne,titleTextLineTwo);
+		
+		ImageView acidFastView = new ImageView(acidFastImage);
+
+		
+		titlePane.getChildren().add(acidFastView);
+		titlePane.getChildren().add(titles);
+		
+		titlePane.setLayoutX(200);
+		titlePane.setLayoutY(150);
+		
+		mainPane.getChildren().add(titlePane);
+		mainPane.getChildren().add(titles);
 		
 		primaryStage.show();
 
@@ -230,6 +270,8 @@ public class VisualizationView implements Observer {
 				nextDayButton.setVisible(true);
 				advanceThirtyButton.setVisible(true);
 				advanceThreeSixtyFiveButton.setVisible(true);				
+				titles.setVisible(false);
+				titlePane.setVisible(false);
 				break;
 			}
 			case DAY_ADVANCED:{
@@ -248,6 +290,8 @@ public class VisualizationView implements Observer {
 				updateLabels(model);
 				updateDiseaseState(model);
 				removeBuildings();
+				titles.setVisible(true);
+				titlePane.setVisible(true);
 				break;
 			}
 		}
