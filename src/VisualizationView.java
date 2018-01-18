@@ -32,10 +32,8 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class VisualizationView implements Observer {
-
-	private StartButtonController startButtonController;
-	private NextDayButtonController nextDayButtonController;
-	private ResetButtonController resetButtonController;
+	
+	private VisualizationModel model;
 	
 	private ArrayList<Rectangle> buildings = new ArrayList<Rectangle>();
 	
@@ -88,6 +86,8 @@ public class VisualizationView implements Observer {
 		latentMDRImage = new Image(latentMDRFile.toURI().toString());
 		activeMDRImage = new Image(activeMDRFile.toURI().toString());
 		dayLabel = new Label();
+		
+		this.model=model;
 	}
 	
 	public void drawDisplay() {
@@ -163,6 +163,8 @@ public class VisualizationView implements Observer {
 				grid.setVgap(3);
 				grid.setHgap(2);
 				
+				dialogStage.setAlwaysOnTop(true);
+				
 				dialogStage.setScene(legendScene);
 				dialogStage.show();
 			}			
@@ -178,11 +180,13 @@ public class VisualizationView implements Observer {
 		advanceThirtyButton.setUserData(30);
 		advanceThreeSixtyFiveButton.setUserData(365);
 		
-		advanceThirtyButton.setOnAction(nextDayButtonController);
-		advanceThreeSixtyFiveButton.setOnAction(nextDayButtonController);
+		advanceThirtyButton.setOnAction(new NextDayButtonController(model));
+		advanceThreeSixtyFiveButton.setOnAction(new NextDayButtonController(model));
 		
-		startButton.setOnAction(startButtonController);
-		nextDayButton.setOnAction(nextDayButtonController);
+//		startButton.setOnAction(startButtonController);
+		startButton.setOnAction(new SettingsPopup(model));
+		
+		nextDayButton.setOnAction(new NextDayButtonController(model));
 		
 		buttonPane.getChildren().add(startButton);
 		buttonPane.getChildren().add(nextDayButton);
@@ -225,7 +229,7 @@ public class VisualizationView implements Observer {
 				initView(model);
 				startButton.setText("Reset");
 				startButton.setOnAction(null);
-				startButton.setOnAction(resetButtonController);
+				startButton.setOnAction(new ResetButtonController(model));
 				nextDayButton.setVisible(true);
 				advanceThirtyButton.setVisible(true);
 				advanceThreeSixtyFiveButton.setVisible(true);				
@@ -240,7 +244,7 @@ public class VisualizationView implements Observer {
 			case MODEL_RESET:{
 				startButton.setText("Start");
 				startButton.setOnAction(null);
-				startButton.setOnAction(startButtonController);
+				startButton.setOnAction(new SettingsPopup(model));
 				nextDayButton.setVisible(false);
 				advanceThirtyButton.setVisible(false);
 				advanceThreeSixtyFiveButton.setVisible(false);
@@ -431,16 +435,5 @@ public class VisualizationView implements Observer {
 		}
 	}
 
-	public void addStartController(StartButtonController c) {
-		this.startButtonController = c;
-	}
-
-	public void addNextDayController(NextDayButtonController nextDayController) {
-		this.nextDayButtonController = nextDayController;
-	}
-
-	public void setResetButtonController(ResetButtonController resetButtonController) {
-		this.resetButtonController = resetButtonController;
-	}
 
 }

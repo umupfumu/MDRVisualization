@@ -12,19 +12,8 @@ public class MDRApplication extends Application{
 	public void start(Stage primaryStage) throws Exception {
 		VisualizationModel myModel = new VisualizationModel();
 		VisualizationView myView = new VisualizationView(primaryStage,myModel);
-		StartButtonController myController = new StartButtonController();
-		NextDayButtonController nextDayController = new NextDayButtonController(myModel);
-		ResetButtonController resetButtonController = new ResetButtonController();
-		
-		resetButtonController.addModel(myModel);
 		
 		myModel.addObserver(myView);
-		myController.addModel(myModel);
-		myController.addView(myView);
-		
-		myView.addStartController(myController);
-		myView.addNextDayController(nextDayController);
-		myView.setResetButtonController(resetButtonController);
 		
 		myView.drawDisplay();
 	}

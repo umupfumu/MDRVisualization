@@ -2,6 +2,9 @@ import java.util.ArrayList;
 import java.util.Observable;
 import java.util.concurrent.ThreadLocalRandom;
 
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+
 public class VisualizationModel extends Observable {
 	private ArrayList<Home> homes = new ArrayList<Home>();
 	private ArrayList<Workplace> workplaces = new ArrayList<Workplace>();
@@ -23,14 +26,16 @@ public class VisualizationModel extends Observable {
 	private static int N_COLUMNS = 81; //should be divisible by N_COLUMNS_PER_BUILDING
 	public static int N_COLUMNS_PER_BUILDING = 3;
 	public static int N_ROWS_PER_BUILDING = 3;
-	
-	private static int WORK_LIKELIHOOD_PERCENT = 70;
-	private static int NUM_STARTING_INFECTED = 2;
-	private static int LIKELIHOOD_TO_INFECT_PERCENT = 100; //percent per day. 1 is 1% not 100%
-	private static int DEVELOP_ACTIVE_PERCENT=50;
-	private static int IN_TREATMENT_LIKELIHOOD=20;
-	private static int DEVELOP_MDR_PERCENT=1;
 	private static int N_DAYS_TO_CURE=180;
+
+
+
+	private SimpleDoubleProperty workLikelihoodPercent = new SimpleDoubleProperty(70);
+	private SimpleIntegerProperty numStartingInfected = new SimpleIntegerProperty(2);
+	private SimpleDoubleProperty likelihoodInfectPercent = new SimpleDoubleProperty(1); //percent per day. 1 is 1% not 100%
+	private SimpleDoubleProperty developActivePercent= new SimpleDoubleProperty(1);
+	private SimpleDoubleProperty likelihoodJoinTreatment=new SimpleDoubleProperty(20);
+	private SimpleDoubleProperty developMDRPercent= new SimpleDoubleProperty(1);
 	
 	private int buildingRows;
 	private int buildingCols;
@@ -63,7 +68,7 @@ public class VisualizationModel extends Observable {
 		for(int i=0;i<nPeople;i++) {
 
 			Person person = new Person();
-			if(i<NUM_STARTING_INFECTED) {
+			if(i<numStartingInfected.get()) {
 				person.setDiseaseState(DiseaseState.ACTIVE);
 				person.setResistanceProfile(ResistanceProfile.NORMAL);
 				person.setInfected(true);
@@ -167,7 +172,7 @@ public class VisualizationModel extends Observable {
 			if(person.getInfected()
 					&& person.isInTreatment()
 					&& person.getResistanceProfile()!=ResistanceProfile.MDR) {
-				if(ThreadLocalRandom.current().nextInt(0,100)<DEVELOP_MDR_PERCENT)
+				if(ThreadLocalRandom.current().nextDouble(0,100)<developMDRPercent.get())
 					person.setResistanceProfile(ResistanceProfile.MDR);
 			}
 		}
@@ -190,7 +195,7 @@ public class VisualizationModel extends Observable {
 			if(person.getInfected() && person.getDiseaseState() == DiseaseState.ACTIVE 
 					&& person.getResistanceProfile()!=ResistanceProfile.MDR
 					&&!person.isInTreatment()) {
-				if(ThreadLocalRandom.current().nextInt(0,100)<IN_TREATMENT_LIKELIHOOD)
+				if(ThreadLocalRandom.current().nextDouble(0,100)<likelihoodJoinTreatment.get())
 					person.setInTreatment(true);
 			}
 		}
@@ -201,7 +206,7 @@ public class VisualizationModel extends Observable {
 			Person person = people.get(i);
 			if(person.getInfected()){
 				if(person.getDiseaseState()==DiseaseState.LATENT)
-					if(ThreadLocalRandom.current().nextInt(0,100)<DEVELOP_ACTIVE_PERCENT)
+					if(ThreadLocalRandom.current().nextDouble(0,100)<developActivePercent.get())
 						person.setDiseaseState(DiseaseState.ACTIVE);
 				if(person.getDiseaseState()==DiseaseState.ACTIVE)
 					spreadInfection(person);
@@ -212,7 +217,7 @@ public class VisualizationModel extends Observable {
 	private void assignWorkplaces() {
 		for(int i=0;i<people.size();i++) {
 			Person person = people.get(i);
-			if(ThreadLocalRandom.current().nextInt(0,100)<WORK_LIKELIHOOD_PERCENT) {
+			if(ThreadLocalRandom.current().nextDouble(0,100)<workLikelihoodPercent.get()) {
 				assignWorkplace(person);
 			}	
 		}
@@ -225,7 +230,7 @@ public class VisualizationModel extends Observable {
 		
 		for(int i=0;i<houseMates.size();i++) {
 			Person housemate = houseMates.get(i);
-			if(ThreadLocalRandom.current().nextDouble(100)<LIKELIHOOD_TO_INFECT_PERCENT) {
+			if(ThreadLocalRandom.current().nextDouble(100)<likelihoodInfectPercent.get()) {
 				if(housemate!=person)
 					housemate.infect(person);
 			}
@@ -236,7 +241,7 @@ public class VisualizationModel extends Observable {
 			ArrayList<Person> workmates = workplace.getCurrentOccupants();
 			for(int i=0;i<workmates.size();i++) {
 				Person workmate = workmates.get(i);
-				if(ThreadLocalRandom.current().nextInt(0,100)<LIKELIHOOD_TO_INFECT_PERCENT) {
+				if(ThreadLocalRandom.current().nextDouble(0,100)<likelihoodInfectPercent.get()) {
 					if(workmate!=person)
 						workmate.infect(person);
 				}
@@ -273,5 +278,27 @@ public class VisualizationModel extends Observable {
 	}
 
 	
+	public SimpleDoubleProperty getWorkLikelihoodPercent() {
+		return workLikelihoodPercent;
+	}
 
+	public SimpleIntegerProperty getNumStartingInfected() {
+		return numStartingInfected;
+	}
+
+	public SimpleDoubleProperty getLikelihoodInfectPercent() {
+		return likelihoodInfectPercent;
+	}
+
+	public SimpleDoubleProperty getDevelopActivePercent() {
+		return developActivePercent;
+	}
+
+	public SimpleDoubleProperty getLikelihoodJoinTreatment() {
+		return likelihoodJoinTreatment;
+	}
+
+	public SimpleDoubleProperty getDevelopMDRPercent() {
+		return developMDRPercent;
+	}
 }
