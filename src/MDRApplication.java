@@ -14,6 +14,9 @@ public class MDRApplication extends Application{
 		VisualizationView myView = new VisualizationView(primaryStage,myModel);
 		StartButtonController myController = new StartButtonController();
 		NextDayButtonController nextDayController = new NextDayButtonController(myModel);
+		ResetButtonController resetButtonController = new ResetButtonController();
+		
+		resetButtonController.addModel(myModel);
 		
 		myModel.addObserver(myView);
 		myController.addModel(myModel);
@@ -21,6 +24,7 @@ public class MDRApplication extends Application{
 		
 		myView.addStartController(myController);
 		myView.addNextDayController(nextDayController);
+		myView.setResetButtonController(resetButtonController);
 		
 		myView.drawDisplay();
 	}

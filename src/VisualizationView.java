@@ -2,6 +2,8 @@
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -28,9 +30,16 @@ public class VisualizationView implements Observer {
 
 	private StartButtonController startButtonController;
 	private NextDayButtonController nextDayButtonController;
+	private ResetButtonController resetButtonController;
+	
+	private ArrayList<Rectangle> buildings = new ArrayList<Rectangle>();
 	
 	private Stage primaryStage;
 
+	private Button startButton = new Button("Start");
+
+	private Button nextDayButton = new Button("Next day");
+	
 	private Pane mainPane;
 	private Label dayLabel;
 	private BorderPane borderPane;
@@ -81,9 +90,8 @@ public class VisualizationView implements Observer {
 		ToolBar toolbar = new ToolBar();
 		VBox bottomBox = new VBox();
 		HBox buttonPane = new HBox();
-		Button startButton = new Button("Start");
-		Button nextDayButton = new Button("Next day");
-		
+
+		nextDayButton.setVisible(false);
 		startButton.setOnAction(startButtonController);
 		nextDayButton.setOnAction(nextDayButtonController);
 		
@@ -123,6 +131,10 @@ public class VisualizationView implements Observer {
 		switch(whatHappened) {
 			case MODEL_INITIATED:{
 				initView(model);
+				startButton.setText("Reset");
+				startButton.setOnAction(null);
+				startButton.setOnAction(resetButtonController);
+				nextDayButton.setVisible(true);
 				break;
 			}
 			case DAY_ADVANCED:{
@@ -131,12 +143,37 @@ public class VisualizationView implements Observer {
 				animatePeopleToWorkplace(model);
 				break;
 			}
+			case MODEL_RESET:{
+				startButton.setText("Start");
+				startButton.setOnAction(null);
+				startButton.setOnAction(startButtonController);
+				nextDayButton.setVisible(false);
+				updateLabels(model);
+				updateDiseaseState(model);
+				removeBuildings();
+				break;
+			}
 		}
 		
 	}
 
+	private void removeBuildings() {
+		for(int i =0;i<buildings.size();i++)
+			buildings.get(i).setVisible(false);
+	}
+
 	private void updateDiseaseState(VisualizationModel model) {
 		ArrayList<Person> people = model.getPeople();
+		Iterator it = imageViewMap.entrySet().iterator();
+		while(it.hasNext()) {
+			Map.Entry pair = (Map.Entry) it.next();
+			Person person = (Person) pair.getKey();
+			ImageView imageView = (ImageView) pair.getValue();
+			if(!people.contains(person)) {
+				imageView.setImage(null);
+				it.remove();
+			}
+		}
 		for(int i=0;i<people.size();i++) {
 			Person person = people.get(i);
 			ImageView imageView = imageViewMap.get(person);
@@ -277,6 +314,7 @@ public class VisualizationView implements Observer {
 		int yLoc = row*buildingHeight;
 
 		Rectangle rect = new Rectangle(xLoc,yLoc,buildingWidth,buildingHeight);
+		buildings.add(rect);
 		rect.setStroke(color);
 		rect.setFill(Color.WHITE);
 		
@@ -305,5 +343,8 @@ public class VisualizationView implements Observer {
 		this.nextDayButtonController = nextDayController;
 	}
 
+	public void setResetButtonController(ResetButtonController resetButtonController) {
+		this.resetButtonController = resetButtonController;
+	}
 
 }

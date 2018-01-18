@@ -38,16 +38,7 @@ public class VisualizationModel extends Observable {
 	private RealEstatePlot[][] realEstatePlots;
 	
 	public VisualizationModel() {
-		buildingRows = N_ROWS / N_ROWS_PER_BUILDING;
-		buildingCols = N_COLUMNS / N_COLUMNS_PER_BUILDING;
-		
-		realEstatePlots = new RealEstatePlot[buildingRows][buildingCols];
-		for(int row=0;row<buildingRows;row++) {
-			for(int col=0;col<buildingCols;col++) {
-				realEstatePlots[row][col]=new RealEstatePlot(row,col,null);
-			}
-		}
-
+		clearPlots();
 	}
 
 	public void runModel() throws Exception {
@@ -255,6 +246,28 @@ public class VisualizationModel extends Observable {
 	private void clearWorkplaces() {
 		for(int i =0; i<workplaces.size();i++) {
 			workplaces.get(i).clearOccupancy();
+		}
+	}
+
+	public void reset() {
+		clearPlots();
+		workplaces=new ArrayList<Workplace>();
+		people=new ArrayList<Person>();
+		homes=new ArrayList<Home>();
+		day=0;
+		setChanged();
+		notifyObservers(WhatHappened.MODEL_RESET);
+	}
+
+	private void clearPlots() {
+		buildingRows = N_ROWS / N_ROWS_PER_BUILDING;
+		buildingCols = N_COLUMNS / N_COLUMNS_PER_BUILDING;
+		
+		realEstatePlots = new RealEstatePlot[buildingRows][buildingCols];
+		for(int row=0;row<buildingRows;row++) {
+			for(int col=0;col<buildingCols;col++) {
+				realEstatePlots[row][col]=new RealEstatePlot(row,col,null);
+			}
 		}
 	}
 
