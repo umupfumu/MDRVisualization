@@ -17,6 +17,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToolBar;
+import javafx.scene.control.Tooltip;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -241,7 +242,7 @@ public class VisualizationView implements Observer {
 		titles.getChildren().addAll(titleTextLineOne,titleTextLineTwo);
 		
 		ImageView acidFastView = new ImageView(acidFastImage);
-
+		Tooltip.install(acidFastView, new Tooltip("Acid fast bacilli image attribution: Microrao, via Wikimedia Commons"));
 		
 		titlePane.getChildren().add(acidFastView);
 		titlePane.getChildren().add(titles);
